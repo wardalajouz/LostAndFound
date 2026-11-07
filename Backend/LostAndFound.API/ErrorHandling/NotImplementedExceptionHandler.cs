@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace LostAndFound.Api.ErrorHandling;
 
@@ -20,11 +20,11 @@ internal sealed class NotImplementedExceptionHandler(IProblemDetailsService prob
             HttpContext = httpContext,
             Exception = exception,
             ProblemDetails =
-              {
-                  Status = StatusCodes.Status501NotImplemented,
-                  Title = "Not Implemented",
-                  Detail = "This feature is not implemented yet."
-              }
+            {
+                Status = StatusCodes.Status501NotImplemented,
+                Title = "Not Implemented",
+                Detail = "This feature is not implemented yet."
+            }
         });
     }
 }

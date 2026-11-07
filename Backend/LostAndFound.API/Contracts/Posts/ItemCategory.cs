@@ -1,3 +1,3 @@
-﻿namespace LostAndFound.Api.Contracts.Posts;
+namespace LostAndFound.Api.Contracts.Posts;
 
-public enum ItemCategory { Wallet, Phone, Keys, Bag, Documents, Electronics, Jewelry, Clothing, Other }
+public enum ItemCategory { Electronics, Bags, Documents, Keys, Accessories, Clothing, Books, Other }

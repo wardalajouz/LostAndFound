@@ -14,8 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<NotImplementedExceptionHandler>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 

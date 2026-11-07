@@ -1,19 +1,95 @@
-@LostAndFound.API_HostAddress = http://localhost:5176
+@HostAddress = http://localhost:5176
+@PostId = 3fa85f64-5717-4562-b3fc-2c963f66afa6
 
-GET {{LostAndFound.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-POST https://localhost:7190/api/posts
+### Register
+POST {{HostAddress}}/api/auth/register
 Content-Type: application/json
 
 {
-  "type": "Lost",
-  "category": "Wallet",
-  "description": "Black leather wallet",
-  "location": {
-    "latitude": 31.95,
-    "longitude": 35.93
-  },
+  "fullName": "Ward Alajouz",
+  "email": "ward@example.com",
+  "userType": "Student",
+  "password": "Str0ngPassw0rd",
+  "confirmPassword": "Str0ngPassw0rd",
+  "acceptTerms": true
+}
+
+### Login
+POST {{HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ward@example.com",
+  "password": "Str0ngPassw0rd"
+}
+
+### Campus locations
+GET {{HostAddress}}/api/campus-locations
+
+### Browse posts
+GET {{HostAddress}}/api/posts?search=samsung&type=Lost&category=Electronics&sort=Newest&page=1&pageSize=20
+
+### Post details
+GET {{HostAddress}}/api/posts/{{PostId}}
+
+### Create a found post
+POST {{HostAddress}}/api/posts
+Content-Type: application/json
+
+{
+  "type": "Found",
+  "itemName": "Samsung Galaxy S23",
+  "category": "Electronics",
+  "color": "Black",
+  "brand": "Samsung",
+  "description": "Black phone with a cracked screen protector",
+  "campusLocationId": 1,
+  "additionalLocationDetails": "Second floor, near the IT faculty cafeteria",
+  "dateOccurred": "2026-11-04",
+  "handedToSecurity": true,
+  "verificationDetails": "Lock screen wallpaper is a cat"
+}
+
+### Update a post
+PUT {{HostAddress}}/api/posts/{{PostId}}
+Content-Type: application/json
+
+{
+  "itemName": "Samsung Galaxy S23",
+  "category": "Electronics",
+  "color": "Black",
+  "description": "Black phone with a cracked screen protector and a blue case",
+  "campusLocationId": 1,
   "dateOccurred": "2026-11-04"
+}
+
+### Mark a post as resolved
+POST {{HostAddress}}/api/posts/{{PostId}}/resolve
+
+### Delete a post
+DELETE {{HostAddress}}/api/posts/{{PostId}}
+
+### My posts
+GET {{HostAddress}}/api/users/me/posts?status=Active
+
+### Message owner
+POST {{HostAddress}}/api/conversations
+Content-Type: application/json
+
+{
+  "postId": "{{PostId}}"
+}
+
+### Unread notifications count
+GET {{HostAddress}}/api/notifications/unread-count
+
+### Support ticket
+POST {{HostAddress}}/api/support-tickets
+Content-Type: application/json
+
+{
+  "fullName": "Ward Alajouz",
+  "email": "ward@example.com",
+  "subject": "Cannot upload images",
+  "message": "The upload button does nothing on my phone."
 }

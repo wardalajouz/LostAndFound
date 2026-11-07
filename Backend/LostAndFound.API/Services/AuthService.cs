@@ -1,4 +1,4 @@
-﻿using LostAndFound.Api.Contracts.Auth;
+using LostAndFound.Api.Contracts.Auth;
 
 namespace LostAndFound.Api.Services;
 
