@@ -1,3 +1,3 @@
-﻿namespace LostAndFound.Api.Contracts.Posts;
+namespace LostAndFound.Api.Contracts.Posts;
 
-public enum PostStatus { Open, Matched, ClaimPending, Resolved }
+public enum PostStatus { Active, Resolved }
