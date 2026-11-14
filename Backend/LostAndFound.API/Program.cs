@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using LostAndFound.Api.Data;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.Services;
 
@@ -14,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<NotImplementedExceptionHandler>();
 
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
