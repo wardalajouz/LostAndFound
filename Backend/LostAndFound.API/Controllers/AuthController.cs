@@ -30,4 +30,29 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
     {
         return Ok(await authService.LoginAsync(request, cancellationToken));
     }
+
+    /// <summary>
+    /// Step 1: emails a reset link. Always returns 202, whether or not the email has an account,
+    /// so the endpoint cannot be used to find out who is registered.
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword(
+        ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        await authService.ForgotPasswordAsync(request, cancellationToken);
+        return Accepted();
+    }
+
+    /// <summary>Step 2: sets the new password using the email and token from the reset link.</summary>
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(
+        ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        await authService.ResetPasswordAsync(request, cancellationToken);
+        return NoContent();
+    }
 }
