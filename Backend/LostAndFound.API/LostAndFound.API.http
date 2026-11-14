@@ -23,6 +23,25 @@ Content-Type: application/json
   "password": "Str0ngPassw0rd"
 }
 
+### Forgot password (step 1: email a reset link)
+POST {{HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "ward@example.com"
+}
+
+### Reset password (step 2: token comes from the emailed link)
+POST {{HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "ward@example.com",
+  "token": "token-from-the-email-link",
+  "newPassword": "N3wStr0ngPassw0rd",
+  "confirmNewPassword": "N3wStr0ngPassw0rd"
+}
+
 ### Campus locations
 GET {{HostAddress}}/api/campus-locations
 
