@@ -1,10 +1,12 @@
 using LostAndFound.Api.Contracts.Support;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers;
 
 [ApiController]
+[AllowAnonymous]
 [Route("api/support-tickets")]
 [Produces("application/json")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]

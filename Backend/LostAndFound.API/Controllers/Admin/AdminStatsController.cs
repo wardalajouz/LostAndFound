@@ -1,10 +1,13 @@
+using LostAndFound.Api.Auth;
 using LostAndFound.Api.Contracts.Admin;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers.Admin;
 
 [ApiController]
+[Authorize(Roles = Roles.Admin)]
 [Route("api/admin/stats")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]

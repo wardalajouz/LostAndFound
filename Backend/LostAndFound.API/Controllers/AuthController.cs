@@ -1,10 +1,12 @@
 using LostAndFound.Api.Contracts.Auth;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers;
 
 [ApiController]
+[AllowAnonymous]
 [Route("api/auth")]
 [Produces("application/json")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
@@ -25,6 +27,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
     [ProducesResponseType<AuthResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AuthResponse>> Login(
         LoginRequest request, CancellationToken cancellationToken)
     {

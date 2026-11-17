@@ -1,17 +1,20 @@
 using LostAndFound.Api.Contracts.Common;
 using LostAndFound.Api.Contracts.Posts;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/posts")]
 [Produces("application/json")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class PostsController(IPostService postService) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType<PagedResponse<PostSummaryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PagedResponse<PostSummaryResponse>>> Browse(
@@ -21,6 +24,7 @@ public sealed class PostsController(IPostService postService) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     [ProducesResponseType<PostResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostResponse>> GetById(Guid id, CancellationToken cancellationToken)

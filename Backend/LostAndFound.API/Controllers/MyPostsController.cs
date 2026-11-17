@@ -1,11 +1,13 @@
 using LostAndFound.Api.Contracts.Common;
 using LostAndFound.Api.Contracts.Posts;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/users/me/posts")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]

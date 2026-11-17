@@ -1,12 +1,14 @@
 using LostAndFound.Api.Contracts.Common;
 using LostAndFound.Api.Contracts.Conversations;
 using LostAndFound.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Api.Controllers;
 
 /// <summary>Conversations the user is not part of return 404, so their existence is not revealed.</summary>
 [ApiController]
+[Authorize]
 [Route("api/conversations")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
