@@ -21,7 +21,9 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
     public FindlyApiFactory()
     {
         _connection.Open();
-        using var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>().UseSqlite(_connection).Options);
+        var options = new DbContextOptionsBuilder<AppDbContext>();
+        UseTestDatabase(options);
+        using var context = new AppDbContext(options.Options);
         context.Database.EnsureCreated();
     }
 
@@ -32,6 +34,13 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         ["ConnectionStrings:Default"] = "Server=replaced-in-tests",
         ["Jwt:SigningKey"] = SigningKey
     };
+
+    /// <summary>Runs code against the test database, for setting up or checking data directly.</summary>
+    public async Task WithDbAsync(Func<AppDbContext, Task> action)
+    {
+        await using AsyncServiceScope scope = Services.CreateAsyncScope();
+        await action(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -45,7 +54,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
+            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options));
 
             services.RemoveAll<IEmailService>();
             services.AddSingleton<IEmailService>(Emails);
@@ -60,4 +69,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
             _connection.Dispose();
         }
     }
+
+    private DbContextOptionsBuilder UseTestDatabase(DbContextOptionsBuilder options) =>
+        options.UseSqlite(_connection).ReplaceService<IModelCustomizer, SqliteTestModelCustomizer>();
 }

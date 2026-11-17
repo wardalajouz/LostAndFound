@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace LostAndFound.Api.Tests.Auth;
 
-/// <summary>Checks who can reach each endpoint. Endpoints still return 501, so 501 means "allowed through".</summary>
+/// <summary>Checks who can reach each endpoint. Any status other than 401/403 means the request got past authorization.</summary>
 public sealed class AuthorizationTests(AdminApiFactory factory) : IClassFixture<AdminApiFactory>
 {
     private const string Id = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
@@ -66,7 +66,8 @@ public sealed class AuthorizationTests(AdminApiFactory factory) : IClassFixture<
     {
         HttpResponseMessage response = await _client.SendWithTokenAsync(new HttpMethod(method), url, token: null);
 
-        Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     [Theory]
@@ -88,7 +89,7 @@ public sealed class AuthorizationTests(AdminApiFactory factory) : IClassFixture<
 
         HttpResponseMessage response = await _client.SendWithTokenAsync(new HttpMethod(method), url, token);
 
-        // Past authorization: either the 501 placeholder, or 400/415 because these probes send no body.
+        // Past authorization: 404 for the made-up id, 501 for unbuilt endpoints, or 400/415 because these probes send no body.
         Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }

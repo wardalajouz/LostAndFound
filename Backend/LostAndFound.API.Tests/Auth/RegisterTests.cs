@@ -20,8 +20,8 @@ public sealed class RegisterTests(FindlyApiFactory factory) : IClassFixture<Find
         Assert.False(string.IsNullOrWhiteSpace(body!.AccessToken));
         Assert.True(body.ExpiresAt > DateTimeOffset.UtcNow);
 
-        HttpResponseMessage protectedCall = await _client.SendWithTokenAsync(HttpMethod.Get, "/api/users/me", body.AccessToken);
-        Assert.Equal(HttpStatusCode.NotImplemented, protectedCall.StatusCode);
+        HttpResponseMessage protectedCall = await _client.SendWithTokenAsync(HttpMethod.Get, "/api/users/me/posts/stats", body.AccessToken);
+        Assert.Equal(HttpStatusCode.OK, protectedCall.StatusCode);
     }
 
     [Fact]

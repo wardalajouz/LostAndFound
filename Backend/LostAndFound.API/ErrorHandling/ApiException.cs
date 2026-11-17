@@ -20,6 +20,10 @@ public sealed class UnauthorizedException(string detail)
 public sealed class ForbiddenException(string detail)
     : ApiException(StatusCodes.Status403Forbidden, "Forbidden", detail);
 
+/// <summary>Also used when the resource exists but belongs to someone else, so its existence is not revealed.</summary>
+public sealed class NotFoundException(string detail)
+    : ApiException(StatusCodes.Status404NotFound, "Not Found", detail);
+
 /// <summary>Field-level errors, returned in the same shape as automatic model validation.</summary>
 public sealed class RequestValidationException(IReadOnlyDictionary<string, string[]> errors)
     : ApiException(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", "One or more validation errors occurred.")
