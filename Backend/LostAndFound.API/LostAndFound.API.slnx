@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="LostAndFound.API.csproj" />
+  <Project Path="../LostAndFound.API.Tests/LostAndFound.API.Tests.csproj" />
 </Solution>
