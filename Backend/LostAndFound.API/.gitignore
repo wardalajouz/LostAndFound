@@ -1,0 +1,2 @@
+# Development emails (password reset links) written to disk instead of being sent.
+App_Data/
