@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | Findly</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="login">
+  <div id="app" v-cloak>
+    <main id="auth-layout">
+
+      <aside id="intro">
+        <a href="#" @click.prevent="showPreviewNotice">Findly.</a>
+        <div>
+          <p>YARMOUK UNIVERSITY</p>
+          <h1>Lost something? Let's find it.</h1>
+          <p>One place for lost and found belongings on campus.</p>
+          <img id="intro-image" src="images/findly-lost-found.png" alt="Magnifying glass, backpack, books and other campus belongings">
+        </div>
+        <p>Students · Faculty · Staff · Visitors</p>
+      </aside>
+
+      <section id="auth-panel">
+        <div id="auth-content">
+          <h1>Sign In</h1>
+          <p>Welcome back to Findly.</p>
+
+          <form id="auth-form" @input="clearFeedback" @change="clearFeedback" @submit.prevent="checkLogin">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              v-model.trim="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              required
+            >
+
+            <label for="password">Password</label>
+            <input
+              id="password"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              autocomplete="current-password"
+              placeholder="Your password"
+              required
+            >
+
+            <div id="checks">
+              <label>
+                <input type="checkbox" v-model="showPassword">
+                Show password
+              </label>
+            </div>
+
+            <button type="submit">
+              Sign In
+            </button>
+          </form>
+
+          <p id="error" v-if="error" role="alert">{{ error }}</p>
+          <p id="preview-status" v-if="message" role="status">{{ message }}</p>
+
+          <div id="auth-links">
+            <a href="forgot.html">Forgot password?</a>
+            <a href="register.html">Create account</a>
+          </div>
+
+          <a id="guest-link" href="#" @click.prevent="showPreviewNotice">Continue as Guest</a>
+          <p id="auth-note">UI preview: the form checks your input but does not sign in.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

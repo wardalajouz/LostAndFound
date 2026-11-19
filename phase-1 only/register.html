@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Findly</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="register">
+  <div id="app" v-cloak>
+    <main id="auth-layout">
+
+      <aside id="intro">
+        <a href="#" @click.prevent="showPreviewNotice">Findly.</a>
+        <div>
+          <p>YARMOUK UNIVERSITY</p>
+          <h1>Lost something? Let's find it.</h1>
+          <p>One place for lost and found belongings on campus.</p>
+          <img id="intro-image" src="images/findly-lost-found.png" alt="Magnifying glass, backpack, books and other campus belongings">
+        </div>
+        <p>Students · Faculty · Staff · Visitors</p>
+      </aside>
+
+      <section id="auth-panel">
+        <div id="auth-content">
+          <h1>Create Account</h1>
+          <p>Join Findly using your personal email. No phone number needed.</p>
+
+          <form id="auth-form" @input="clearFeedback" @change="clearFeedback" @submit.prevent="checkRegister">
+            <label for="fullName">Full Name</label>
+            <input
+              id="fullName"
+              type="text"
+              v-model.trim="fullName"
+              minlength="2"
+              maxlength="100"
+              autocomplete="name"
+              required
+            >
+
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              v-model.trim="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              required
+            >
+
+            <label for="userType">User Type</label>
+            <select id="userType" v-model="userType" required>
+              <option value="" disabled>Select your type</option>
+              <option value="Student">Student</option>
+              <option value="Faculty">Faculty</option>
+              <option value="Staff">Staff</option>
+              <option value="Visitor">Visitor</option>
+            </select>
+
+            <label for="password">Password</label>
+            <input
+              id="password"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              minlength="8"
+              maxlength="128"
+              autocomplete="new-password"
+              placeholder="8 characters or more"
+              required
+            >
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="confirmPassword"
+              autocomplete="new-password"
+              required
+            >
+
+            <div id="checks">
+              <label>
+                <input type="checkbox" v-model="showPassword">
+                Show password
+              </label>
+              <label>
+                <input type="checkbox" v-model="showConfirmPassword">
+                Show confirmation
+              </label>
+            </div>
+
+            <div id="terms-check">
+              <label>
+                <input type="checkbox" v-model="acceptTerms" required>
+                I agree to the
+                <a href="#" @click.prevent="showTermsNotice">Terms &amp; Conditions</a>
+              </label>
+            </div>
+
+            <button type="submit">
+              Create Account
+            </button>
+          </form>
+
+          <p id="error" v-if="error" role="alert">{{ error }}</p>
+          <p id="preview-status" v-if="message" role="status">{{ message }}</p>
+
+          <div id="auth-links">
+            <a href="login.html">Already have an account? Sign In</a>
+            <a href="#" @click.prevent="showPreviewNotice">Continue as Guest</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

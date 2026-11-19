@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Password | Findly</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body data-page="forgot">
+  <div id="app" v-cloak>
+    <main id="auth-layout">
+
+      <aside id="intro">
+        <a href="#" @click.prevent="showPreviewNotice">Findly.</a>
+        <div>
+          <p>YARMOUK UNIVERSITY</p>
+          <h1>Lost something? Let's find it.</h1>
+          <p>One place for lost and found belongings on campus.</p>
+          <img id="intro-image" src="images/findly-lost-found.png"
+            alt="Magnifying glass, backpack, books and other campus belongings">
+        </div>
+        <p>Students · Faculty · Staff · Visitors</p>
+      </aside>
+
+      <section id="auth-panel">
+        <div id="auth-content">
+          <h1>Forgot Password?</h1>
+          <p>Enter your email to request password reset instructions.</p>
+
+          <form id="auth-form" @input="clearFeedback" @change="clearFeedback" @submit.prevent="checkForgotPassword">
+            <label for="email">Email</label>
+            <input id="email" type="email" v-model.trim="email" autocomplete="email" placeholder="you@example.com"
+              required>
+
+            <button type="submit">Request Reset Link</button>
+          </form>
+
+          <p id="error" v-if="error" role="alert">{{ error }}</p>
+          <p id="preview-status" v-if="message" role="status">{{ message }}</p>
+
+          <div id="auth-links">
+            <a href="login.html">Back to Sign In</a>
+            <a href="#" @click.prevent="showPreviewNotice">Continue as Guest</a>
+          </div>
+          <p id="auth-note">UI preview: no reset email is sent.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+
+</html>
