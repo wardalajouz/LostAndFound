@@ -11,7 +11,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LostAndFound.Api.Tests.Infrastructure;
 
-/// <summary>Runs the real API in memory, with an in-memory SQLite database and a recording email service.</summary>
+/// <summary>
+/// Runs the real API in memory, with an in-memory SQLite database, a recording email service,
+/// and a temporary folder for uploaded files.
+/// </summary>
 public class FindlyApiFactory : WebApplicationFactory<Program>
 {
     public const string SigningKey = "test-signing-key-that-is-long-enough-for-hmac-sha256";
@@ -29,10 +32,15 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
 
     public RecordingEmailService Emails { get; } = new();
 
+    public FailingSaveChangesInterceptor SaveFailures { get; } = new();
+
+    public string StorageRoot { get; } = Path.Combine(Path.GetTempPath(), $"findly-tests-{Guid.NewGuid():N}");
+
     protected virtual IReadOnlyDictionary<string, string> Settings => new Dictionary<string, string>
     {
         ["ConnectionStrings:Default"] = "Server=replaced-in-tests",
-        ["Jwt:SigningKey"] = SigningKey
+        ["Jwt:SigningKey"] = SigningKey,
+        ["Storage:RootPath"] = StorageRoot
     };
 
     /// <summary>Runs code against the test database, for setting up or checking data directly.</summary>
@@ -41,6 +49,14 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         await using AsyncServiceScope scope = Services.CreateAsyncScope();
         await action(scope.ServiceProvider.GetRequiredService<AppDbContext>());
     }
+
+    /// <summary>Every stored file, as a path relative to the storage folder with forward slashes.</summary>
+    public IReadOnlyList<string> StoredFiles() =>
+        Directory.Exists(StorageRoot)
+            ? Directory.GetFiles(StorageRoot, "*", SearchOption.AllDirectories)
+                .Select(path => Path.GetRelativePath(StorageRoot, path).Replace('\\', '/'))
+                .ToList()
+            : [];
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -54,7 +70,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options));
+            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options).AddInterceptors(SaveFailures));
 
             services.RemoveAll<IEmailService>();
             services.AddSingleton<IEmailService>(Emails);
@@ -67,6 +83,10 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         if (disposing)
         {
             _connection.Dispose();
+            if (Directory.Exists(StorageRoot))
+            {
+                Directory.Delete(StorageRoot, recursive: true);
+            }
         }
     }
 

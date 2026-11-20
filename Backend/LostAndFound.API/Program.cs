@@ -5,6 +5,7 @@ using LostAndFound.Api.Email;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.OpenApi;
 using LostAndFound.Api.Services;
+using LostAndFound.Api.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddEmail(builder.Configuration, builder.Environment);
+builder.Services.AddFileStorage(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
@@ -36,6 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStoredFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

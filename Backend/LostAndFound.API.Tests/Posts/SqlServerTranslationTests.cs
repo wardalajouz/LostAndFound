@@ -3,6 +3,7 @@ using LostAndFound.Api.Contracts.Posts;
 using LostAndFound.Api.Contracts.Profile;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Images;
 using LostAndFound.Api.Localization;
 using LostAndFound.Api.Services;
 using LostAndFound.Api.Tests.Infrastructure;
@@ -86,6 +87,40 @@ public sealed class SqlServerTranslationTests : IDisposable
         await service.GetAllAsync(CancellationToken.None);
 
         Assert.Contains("[NameEn]", Assert.Single(_interceptor.Commands));
+    }
+
+    [Fact]
+    public async Task Post_image_ownership_lookup_translates_to_sql_server()
+    {
+        var service = new PostImageService(_db, _user, new SkiaImageProcessor(), new NoStorage(), TimeProvider.System,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<PostImageService>.Instance);
+
+        await Assert.ThrowsAsync<NotFoundException>(() => service.DeleteAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Contains("[OwnerId]", Assert.Single(_interceptor.Commands));
+    }
+
+    [Fact]
+    public async Task Avatar_user_lookup_translates_to_sql_server()
+    {
+        var service = new ProfileService(_db, _user, new SkiaImageProcessor(), new NoStorage(),
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<ProfileService>.Instance);
+        var request = new LostAndFound.Api.Contracts.Profile.UploadAvatarRequest
+        {
+            Image = new Microsoft.AspNetCore.Http.FormFile(new MemoryStream(), 0, 0, "image", "a.png")
+        };
+
+        await Assert.ThrowsAsync<UnauthorizedException>(() => service.UploadAvatarAsync(request, CancellationToken.None));
+
+        Assert.Contains("[DeletedAt] IS NULL", Assert.Single(_interceptor.Commands));
+    }
+
+    private sealed class NoStorage : LostAndFound.Api.Storage.IFileStorage
+    {
+        public Task<string> SaveAsync(string folder, byte[] content, string extension, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("Not expected in this test.");
+
+        public Task DeleteAsync(string key, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
     public void Dispose() => _db.Dispose();

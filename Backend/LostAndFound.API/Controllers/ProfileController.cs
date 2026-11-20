@@ -1,4 +1,5 @@
 using LostAndFound.Api.Contracts.Profile;
+using LostAndFound.Api.Images;
 using LostAndFound.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,8 @@ public sealed class ProfileController(IProfileService profileService) : Controll
 
     [HttpPut("avatar")]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(ImageLimits.AvatarRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = ImageLimits.AvatarRequestBytes)]
     [ProducesResponseType<AvatarResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AvatarResponse>> UploadAvatar(
