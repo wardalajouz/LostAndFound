@@ -83,7 +83,7 @@ public sealed class AvatarTests(FindlyApiFactory factory) : IClassFixture<Findly
         string token = await NewUserAsync();
         AvatarResponse current = await _client.UploadAvatarOkAsync(token, ImageApi.Jpeg());
         int filesBefore = factory.StoredFiles().Count;
-        factory.SaveFailures.FailNextSave();
+        factory.SaveHooks.FailNextSave();
 
         HttpResponseMessage response = await _client.UploadAvatarAsync(token, ImageApi.Jpeg());
 

@@ -15,17 +15,22 @@ namespace LostAndFound.Api.Controllers;
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class ConversationsController(IConversationService conversationService) : ControllerBase
 {
-    /// <summary>"Message Owner": returns the existing conversation for the post, or starts a new one.</summary>
+    /// <summary>
+    /// "Message Owner": returns the existing conversation for the post, or starts a new one.
+    /// 400 for your own post, 404 for a hidden or deleted post, 409 for a new chat on a resolved post.
+    /// </summary>
     [HttpPost]
     [ProducesResponseType<ConversationResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<ConversationResponse>> Start(
         StartConversationRequest request, CancellationToken cancellationToken)
     {
         return Ok(await conversationService.StartAsync(request, cancellationToken));
     }
 
+    /// <summary>Inbox, most recent activity first. A post owner sees a chat once it has a message.</summary>
     [HttpGet]
     [ProducesResponseType<PagedResponse<ConversationResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -65,6 +70,7 @@ public sealed class ConversationsController(IConversationService conversationSer
         return StatusCode(StatusCodes.Status201Created, message);
     }
 
+    /// <summary>Marks the other participant's messages as read.</summary>
     [HttpPost("{id:guid}/read")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]

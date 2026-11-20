@@ -205,7 +205,7 @@ public sealed class PostImageTests(FindlyApiFactory factory) : IClassFixture<Fin
     {
         (string token, PostResponse post) = await NewPostAsync();
         int filesBefore = factory.StoredFiles().Count;
-        factory.SaveFailures.FailNextSave();
+        factory.SaveHooks.FailNextSave();
 
         HttpResponseMessage response = await _client.UploadPostImagesAsync(post.Id, token, ImageApi.Jpeg(), ImageApi.Jpeg());
 

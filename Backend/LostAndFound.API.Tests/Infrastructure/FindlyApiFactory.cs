@@ -32,7 +32,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
 
     public RecordingEmailService Emails { get; } = new();
 
-    public FailingSaveChangesInterceptor SaveFailures { get; } = new();
+    public SaveChangesHooks SaveHooks { get; } = new();
 
     public string StorageRoot { get; } = Path.Combine(Path.GetTempPath(), $"findly-tests-{Guid.NewGuid():N}");
 
@@ -70,7 +70,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options).AddInterceptors(SaveFailures));
+            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options).AddInterceptors(SaveHooks));
 
             services.RemoveAll<IEmailService>();
             services.AddSingleton<IEmailService>(Emails);
