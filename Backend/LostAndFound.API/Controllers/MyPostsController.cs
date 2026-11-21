@@ -11,7 +11,6 @@ namespace LostAndFound.Api.Controllers;
 [Route("api/users/me/posts")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class MyPostsController(IMyPostsService myPostsService) : ControllerBase
 {
     [HttpGet]

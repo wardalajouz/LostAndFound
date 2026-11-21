@@ -6,6 +6,7 @@ using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.Localization;
+using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services.Posts;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ public sealed class PostService(
     AppDbContext db,
     ICurrentUser currentUser,
     IRequestLanguage requestLanguage,
+    INotifier notifier,
     TimeProvider timeProvider) : IPostService
 {
     private const string PostNotFound = "Post not found.";
@@ -125,7 +127,7 @@ public sealed class PostService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    /// <summary>Idempotent: resolving an already resolved post changes nothing.</summary>
+    /// <summary>Idempotent: resolving an already resolved post changes nothing and notifies no one again.</summary>
     public async Task ResolveAsync(Guid id, CancellationToken cancellationToken)
     {
         Post post = await FindOwnPostAsync(id, cancellationToken);
@@ -138,6 +140,7 @@ public sealed class PostService(
         post.Status = PostStatus.Resolved;
         post.ResolvedAt = now;
         post.UpdatedAt = now;
+        await notifier.NotifyPostResolvedAsync(post.Id, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 

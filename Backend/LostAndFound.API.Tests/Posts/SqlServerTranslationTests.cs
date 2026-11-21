@@ -5,6 +5,7 @@ using LostAndFound.Api.Data;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.Images;
 using LostAndFound.Api.Localization;
+using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services;
 using LostAndFound.Api.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ public sealed class SqlServerTranslationTests : IDisposable
     [Fact]
     public async Task Browse_with_every_filter_translates_to_sql_server()
     {
-        var service = new PostService(_db, _user, _language, TimeProvider.System);
+        var service = new PostService(_db, _user, _language, new DatabaseNotifier(_db), TimeProvider.System);
         var query = new BrowsePostsQuery
         {
             Search = "100%_[x]",
@@ -59,7 +60,7 @@ public sealed class SqlServerTranslationTests : IDisposable
     [Fact]
     public async Task Post_details_translate_to_sql_server()
     {
-        var service = new PostService(_db, _user, _language, TimeProvider.System);
+        var service = new PostService(_db, _user, _language, new DatabaseNotifier(_db), TimeProvider.System);
 
         await Assert.ThrowsAsync<NotFoundException>(() => service.GetByIdAsync(Guid.NewGuid(), CancellationToken.None));
 

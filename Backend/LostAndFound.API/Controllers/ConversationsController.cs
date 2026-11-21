@@ -12,7 +12,6 @@ namespace LostAndFound.Api.Controllers;
 [Route("api/conversations")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class ConversationsController(IConversationService conversationService) : ControllerBase
 {
     /// <summary>

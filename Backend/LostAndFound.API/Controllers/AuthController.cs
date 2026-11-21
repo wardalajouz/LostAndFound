@@ -9,7 +9,6 @@ namespace LostAndFound.Api.Controllers;
 [AllowAnonymous]
 [Route("api/auth")]
 [Produces("application/json")]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]

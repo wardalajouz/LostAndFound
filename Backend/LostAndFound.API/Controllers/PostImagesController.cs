@@ -12,7 +12,6 @@ namespace LostAndFound.Api.Controllers;
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class PostImagesController(IPostImageService postImageService) : ControllerBase
 {
     [HttpPost]

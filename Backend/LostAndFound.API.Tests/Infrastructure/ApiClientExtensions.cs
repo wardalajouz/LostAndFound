@@ -17,9 +17,11 @@ public static class ApiClientExtensions
 
     public static string UniqueEmail() => $"user-{Guid.NewGuid():N}@findly.test";
 
-    public static object RegisterBody(string email, string password = ValidPassword) => new
+    public const string DefaultFullName = "Ward Alajouz";
+
+    public static object RegisterBody(string email, string password = ValidPassword, string fullName = DefaultFullName) => new
     {
-        fullName = "Ward Alajouz",
+        fullName,
         email,
         userType = "Student",
         password,
@@ -27,15 +29,16 @@ public static class ApiClientExtensions
         acceptTerms = true
     };
 
-    public static Task<HttpResponseMessage> RegisterAsync(this HttpClient client, string email, string password = ValidPassword) =>
-        client.PostAsJsonAsync("/api/auth/register", RegisterBody(email, password));
+    public static Task<HttpResponseMessage> RegisterAsync(
+        this HttpClient client, string email, string password = ValidPassword, string fullName = DefaultFullName) =>
+        client.PostAsJsonAsync("/api/auth/register", RegisterBody(email, password, fullName));
 
     public static Task<HttpResponseMessage> LoginAsync(this HttpClient client, string email, string password) =>
         client.PostAsJsonAsync("/api/auth/login", new { email, password });
 
-    public static async Task<string> RegisterAndGetTokenAsync(this HttpClient client, string email)
+    public static async Task<string> RegisterAndGetTokenAsync(this HttpClient client, string email, string fullName = DefaultFullName)
     {
-        HttpResponseMessage response = await client.RegisterAsync(email);
+        HttpResponseMessage response = await client.RegisterAsync(email, fullName: fullName);
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<AuthResponse>(Json))!.AccessToken;
     }

@@ -10,7 +10,6 @@ namespace LostAndFound.Api.Controllers;
 [Authorize]
 [Route("api/posts")]
 [Produces("application/json")]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class PostsController(IPostService postService) : ControllerBase
 {
     [HttpGet]

@@ -9,7 +9,6 @@ namespace LostAndFound.Api.Controllers;
 [AllowAnonymous]
 [Route("api/campus-locations")]
 [Produces("application/json")]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class CampusLocationsController(ICampusLocationService campusLocationService) : ControllerBase
 {
     [HttpGet]

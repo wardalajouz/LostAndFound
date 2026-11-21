@@ -6,6 +6,7 @@ using LostAndFound.Api.Contracts.Posts;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services.Conversations;
 using LostAndFound.Api.Services.Posts;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace LostAndFound.Api.Services;
 /// Chats between a user and a post's owner. Every operation is limited to the two participants;
 /// anyone else gets the same 404 as for a chat that does not exist.
 /// </summary>
-public sealed class ConversationService(AppDbContext db, ICurrentUser currentUser, TimeProvider timeProvider)
+public sealed class ConversationService(AppDbContext db, ICurrentUser currentUser, INotifier notifier, TimeProvider timeProvider)
     : IConversationService
 {
     private const string ConversationNotFound = "Conversation not found.";
@@ -111,21 +112,30 @@ public sealed class ConversationService(AppDbContext db, ICurrentUser currentUse
         string content = OptionalText.Normalize(request.Content)
             ?? throw new RequestValidationException(nameof(SendMessageRequest.Content), "The message cannot be empty.");
 
-        Conversation conversation = await db.Conversations
+        var target = await db.Conversations
             .WithParticipant(userId)
-            .FirstOrDefaultAsync(c => c.Id == conversationId, cancellationToken)
+            .Where(c => c.Id == conversationId)
+            .Select(c => new { Conversation = c, PostOwnerId = c.Post.OwnerId })
+            .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException(ConversationNotFound);
+
+        Conversation conversation = target.Conversation;
+        Guid recipientId = conversation.StarterId == userId ? target.PostOwnerId : conversation.StarterId;
 
         DateTimeOffset now = timeProvider.GetUtcNow();
         var message = new Message { ConversationId = conversation.Id, SenderId = userId, Content = content, SentAt = now };
         db.Messages.Add(message);
         conversation.LastMessageAt = now;
+        await notifier.NotifyNewMessageAsync(recipientId, conversation.Id, conversation.PostId, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
 
         return new MessageResponse(message.Id, IsMine: true, message.Content, message.SentAt, ReadAt: null);
     }
 
-    /// <summary>Marks the other participant's unread messages as read. Calling it again changes nothing.</summary>
+    /// <summary>
+    /// Marks the other participant's unread messages as read, and clears this chat's new-message
+    /// notification. Calling it again changes nothing.
+    /// </summary>
     public async Task MarkAsReadAsync(Guid conversationId, CancellationToken cancellationToken)
     {
         Guid userId = currentUser.Id;
@@ -135,6 +145,8 @@ public sealed class ConversationService(AppDbContext db, ICurrentUser currentUse
         await db.Messages
             .Where(m => m.ConversationId == conversationId && m.SenderId != userId && m.ReadAt == null)
             .ExecuteUpdateAsync(setters => setters.SetProperty(m => m.ReadAt, now), cancellationToken);
+
+        await notifier.MarkChatNotificationsReadAsync(userId, conversationId, cancellationToken);
     }
 
     private Task<Guid?> FindStartedByAsync(Guid postId, Guid userId, CancellationToken cancellationToken) =>

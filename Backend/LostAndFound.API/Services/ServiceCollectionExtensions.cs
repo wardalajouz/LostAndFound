@@ -1,5 +1,6 @@
 using LostAndFound.Api.Auth;
 using LostAndFound.Api.Localization;
+using LostAndFound.Api.Notifications;
 
 namespace LostAndFound.Api.Services;
 
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
             .AddHttpContextAccessor()
             .AddScoped<ICurrentUser, HttpContextCurrentUser>()
             .AddScoped<IRequestLanguage, AcceptLanguageRequestLanguage>()
+            .AddScoped<INotifier, DatabaseNotifier>()
             .AddScoped<IAuthService, AuthService>()
             .AddScoped<ICampusLocationService, CampusLocationService>()
             .AddScoped<IPostService, PostService>()

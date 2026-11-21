@@ -3,6 +3,7 @@ using LostAndFound.Api.Contracts.Common;
 using LostAndFound.Api.Contracts.Conversations;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services;
 using LostAndFound.Api.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public sealed class ConversationSqlServerTranslationTests : IDisposable
             .UseSqlServer("Server=dry-run;Database=Findly;TrustServerCertificate=True")
             .AddInterceptors(_interceptor)
             .Options);
-        _service = new ConversationService(_db, new FixedUser(Guid.NewGuid()), TimeProvider.System);
+        _service = new ConversationService(_db, new FixedUser(Guid.NewGuid()), new DatabaseNotifier(_db), TimeProvider.System);
     }
 
     [Fact]
@@ -80,9 +81,11 @@ public sealed class ConversationSqlServerTranslationTests : IDisposable
 
         await _service.MarkAsReadAsync(Guid.NewGuid(), CancellationToken.None);
 
-        string update = _interceptor.Commands.Last();
-        Assert.StartsWith("UPDATE", update.TrimStart());
-        Assert.Contains("[ReadAt] IS NULL", update);
+        // Messages first, then this chat's notifications.
+        string[] updates = _interceptor.Commands.Where(c => c.TrimStart().StartsWith("UPDATE", StringComparison.Ordinal)).ToArray();
+        Assert.Equal(2, updates.Length);
+        Assert.Contains("[ReadAt] IS NULL", updates[0]);
+        Assert.Contains("[Notifications]", updates[1]);
     }
 
     public void Dispose() => _db.Dispose();
