@@ -128,7 +128,7 @@ public sealed class StartConversationTests(FindlyApiFactory factory) : IClassFix
         factory.SaveHooks.BeforeNextSave(async context =>
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
-                $"INSERT INTO Conversations (Id, PostId, StarterId, CreatedAt) VALUES ({rivalId}, {post.Id}, {wardId}, {0L})");
+                $"INSERT INTO Conversations (Id, PostId, StarterId, CreatedAt) VALUES ({rivalId}, {post.Id}, {wardId}, {DateTimeOffset.UtcNow})");
         });
 
         HttpResponseMessage response = await _client.StartChatAsync(ward, post.Id);

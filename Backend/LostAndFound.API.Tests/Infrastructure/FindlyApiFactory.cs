@@ -3,7 +3,6 @@ using LostAndFound.Api.Email;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,23 +11,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace LostAndFound.Api.Tests.Infrastructure;
 
 /// <summary>
-/// Runs the real API in memory, with an in-memory SQLite database, a recording email service,
-/// and a temporary folder for uploaded files.
+/// Runs the real API in memory, with its own test database (see <see cref="TestDatabase"/>),
+/// a recording email service, and a temporary folder for uploaded files.
 /// </summary>
 public class FindlyApiFactory : WebApplicationFactory<Program>
 {
     public const string SigningKey = "test-signing-key-that-is-long-enough-for-hmac-sha256";
 
-    private readonly SqliteConnection _connection = new("DataSource=:memory:");
-
-    public FindlyApiFactory()
-    {
-        _connection.Open();
-        var options = new DbContextOptionsBuilder<AppDbContext>();
-        UseTestDatabase(options);
-        using var context = new AppDbContext(options.Options);
-        context.Database.EnsureCreated();
-    }
+    private readonly TestDatabase _database = TestDatabase.Create();
 
     public RecordingEmailService Emails { get; } = new();
 
@@ -70,7 +60,7 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>(options => UseTestDatabase(options).AddInterceptors(SaveHooks));
+            services.AddDbContext<AppDbContext>(options => _database.Configure(options).AddInterceptors(SaveHooks));
 
             services.RemoveAll<IEmailService>();
             services.AddSingleton<IEmailService>(Emails);
@@ -82,14 +72,11 @@ public class FindlyApiFactory : WebApplicationFactory<Program>
         base.Dispose(disposing);
         if (disposing)
         {
-            _connection.Dispose();
+            _database.Dispose();
             if (Directory.Exists(StorageRoot))
             {
                 Directory.Delete(StorageRoot, recursive: true);
             }
         }
     }
-
-    private DbContextOptionsBuilder UseTestDatabase(DbContextOptionsBuilder options) =>
-        options.UseSqlite(_connection).ReplaceService<IModelCustomizer, SqliteTestModelCustomizer>();
 }
