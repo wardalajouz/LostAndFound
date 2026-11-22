@@ -17,5 +17,5 @@ public interface IProfileService
 
     Task<UserSettings> UpdateSettingsAsync(UserSettings settings, CancellationToken cancellationToken);
 
-    Task DeleteAccountAsync(CancellationToken cancellationToken);
+    Task DeleteAccountAsync(DeleteAccountRequest request, CancellationToken cancellationToken);
 }

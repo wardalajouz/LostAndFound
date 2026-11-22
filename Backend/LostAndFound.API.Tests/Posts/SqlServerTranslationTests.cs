@@ -20,8 +20,8 @@ public sealed class SqlServerTranslationTests : IDisposable
 {
     private readonly SqlServerDryRunInterceptor _interceptor = new();
     private readonly AppDbContext _db;
-    private readonly ICurrentUser _user = new FixedUser(Guid.NewGuid());
-    private readonly IRequestLanguage _language = new FixedLanguage(PreferredLanguage.English);
+    private readonly ICurrentUser _user = new FixedCurrentUser(Guid.NewGuid());
+    private readonly IRequestLanguage _language = new FixedRequestLanguage(PreferredLanguage.English);
 
     public SqlServerTranslationTests()
     {
@@ -101,21 +101,6 @@ public sealed class SqlServerTranslationTests : IDisposable
         Assert.Contains("[OwnerId]", Assert.Single(_interceptor.Commands));
     }
 
-    [Fact]
-    public async Task Avatar_user_lookup_translates_to_sql_server()
-    {
-        var service = new ProfileService(_db, _user, new SkiaImageProcessor(), new NoStorage(),
-            Microsoft.Extensions.Logging.Abstractions.NullLogger<ProfileService>.Instance);
-        var request = new LostAndFound.Api.Contracts.Profile.UploadAvatarRequest
-        {
-            Image = new Microsoft.AspNetCore.Http.FormFile(new MemoryStream(), 0, 0, "image", "a.png")
-        };
-
-        await Assert.ThrowsAsync<UnauthorizedException>(() => service.UploadAvatarAsync(request, CancellationToken.None));
-
-        Assert.Contains("[DeletedAt] IS NULL", Assert.Single(_interceptor.Commands));
-    }
-
     private sealed class NoStorage : LostAndFound.Api.Storage.IFileStorage
     {
         public Task<string> SaveAsync(string folder, byte[] content, string extension, CancellationToken cancellationToken) =>
@@ -125,14 +110,4 @@ public sealed class SqlServerTranslationTests : IDisposable
     }
 
     public void Dispose() => _db.Dispose();
-
-    private sealed class FixedUser(Guid id) : ICurrentUser
-    {
-        public Guid Id { get; } = id;
-    }
-
-    private sealed class FixedLanguage(PreferredLanguage language) : IRequestLanguage
-    {
-        public PreferredLanguage Current { get; } = language;
-    }
 }

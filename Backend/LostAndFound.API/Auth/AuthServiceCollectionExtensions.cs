@@ -53,6 +53,7 @@ public static class AuthServiceCollectionExtensions
             {
                 JwtOptions jwt = jwtOptions.Value;
                 bearer.MapInboundClaims = false;
+                bearer.Events = new JwtBearerEvents { OnTokenValidated = ActiveAccountCheck.OnTokenValidatedAsync };
                 bearer.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

@@ -9,9 +9,9 @@ namespace LostAndFound.Api.Controllers;
 [AllowAnonymous]
 [Route("api/support-tickets")]
 [Produces("application/json")]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class SupportTicketsController(ISupportTicketService supportTicketService) : ControllerBase
 {
+    /// <summary>Open to guests. Signed-in users' tickets are linked to their account. A copy is emailed to the support inbox.</summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]

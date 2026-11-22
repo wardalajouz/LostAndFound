@@ -11,7 +11,6 @@ namespace LostAndFound.Api.Controllers;
 [Route("api/users/me")]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class ProfileController(IProfileService profileService) : ControllerBase
 {
     [HttpGet]
@@ -21,6 +20,7 @@ public sealed class ProfileController(IProfileService profileService) : Controll
         return Ok(await profileService.GetAsync(cancellationToken));
     }
 
+    /// <summary>Changing the email also needs <c>currentPassword</c>; a wrong one is a 400 on that field. 409 if the email is taken.</summary>
     [HttpPut]
     [ProducesResponseType<ProfileResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -43,6 +43,7 @@ public sealed class ProfileController(IProfileService profileService) : Controll
         return Ok(await profileService.UploadAvatarAsync(request, cancellationToken));
     }
 
+    /// <summary>A wrong current password is a 400 on <c>currentPassword</c>, and counts toward the login lockout.</summary>
     [HttpPut("password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -69,11 +70,18 @@ public sealed class ProfileController(IProfileService profileService) : Controll
         return Ok(await profileService.UpdateSettingsAsync(settings, cancellationToken));
     }
 
+    /// <summary>
+    /// Permanently deletes the account after checking the password: personal data is removed,
+    /// posts are hidden, notifications are deleted, and the user is signed out everywhere.
+    /// Chats stay, showing "Deleted user", so the other person keeps their history.
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteAccount(CancellationToken cancellationToken)
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteAccount(
+        [FromBody] DeleteAccountRequest request, CancellationToken cancellationToken)
     {
-        await profileService.DeleteAccountAsync(cancellationToken);
+        await profileService.DeleteAccountAsync(request, cancellationToken);
         return NoContent();
     }
 }

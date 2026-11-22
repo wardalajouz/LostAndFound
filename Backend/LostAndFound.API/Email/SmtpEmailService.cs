@@ -14,6 +14,11 @@ public sealed class SmtpEmailService(IOptions<EmailOptions> options) : IEmailSer
         var mime = new MimeMessage();
         mime.From.Add(new MailboxAddress(email.FromName, email.FromAddress));
         mime.To.Add(new MailboxAddress(message.ToName, message.ToAddress));
+        if (message.ReplyToAddress is not null)
+        {
+            mime.ReplyTo.Add(MailboxAddress.Parse(message.ReplyToAddress));
+        }
+
         mime.Subject = message.Subject;
         mime.Body = new TextPart("plain") { Text = message.TextBody };
 

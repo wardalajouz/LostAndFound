@@ -23,7 +23,7 @@ public sealed class ConversationSqlServerTranslationTests : IDisposable
             .UseSqlServer("Server=dry-run;Database=Findly;TrustServerCertificate=True")
             .AddInterceptors(_interceptor)
             .Options);
-        _service = new ConversationService(_db, new FixedUser(Guid.NewGuid()), new DatabaseNotifier(_db), TimeProvider.System);
+        _service = new ConversationService(_db, new FixedCurrentUser(Guid.NewGuid()), new DatabaseNotifier(_db), TimeProvider.System);
     }
 
     [Fact]
@@ -89,9 +89,4 @@ public sealed class ConversationSqlServerTranslationTests : IDisposable
     }
 
     public void Dispose() => _db.Dispose();
-
-    private sealed class FixedUser(Guid id) : ICurrentUser
-    {
-        public Guid Id { get; } = id;
-    }
 }

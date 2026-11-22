@@ -15,7 +15,8 @@ public sealed class FileEmailService(IWebHostEnvironment environment, TimeProvid
         string fileName = $"{timeProvider.GetUtcNow():yyyyMMdd-HHmmss-fff}-{Guid.NewGuid():N}.txt";
         string path = Path.Combine(folder, fileName);
 
-        string content = $"To: {message.ToName} <{message.ToAddress}>\nSubject: {message.Subject}\n\n{message.TextBody}\n";
+        string replyTo = message.ReplyToAddress is null ? string.Empty : $"Reply-To: {message.ReplyToAddress}\n";
+        string content = $"To: {message.ToName} <{message.ToAddress}>\n{replyTo}Subject: {message.Subject}\n\n{message.TextBody}\n";
         await File.WriteAllTextAsync(path, content, cancellationToken);
 
         logger.LogInformation("Development email written to {Path}.", path);

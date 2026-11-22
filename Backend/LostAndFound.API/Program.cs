@@ -24,7 +24,7 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddEmail(builder.Configuration, builder.Environment);
 builder.Services.AddFileStorage(builder.Configuration);
-builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 

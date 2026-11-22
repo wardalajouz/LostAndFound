@@ -23,7 +23,7 @@ public sealed class NotificationSqlServerTranslationTests : IDisposable
             .AddInterceptors(_interceptor)
             .Options);
 
-    private NotificationService Service => new(_db, new FixedUser(Guid.NewGuid()), new FixedLanguage());
+    private NotificationService Service => new(_db, new FixedCurrentUser(Guid.NewGuid()), new FixedRequestLanguage());
 
     [Fact]
     public async Task List_with_item_and_sender_names_translates()
@@ -87,14 +87,4 @@ public sealed class NotificationSqlServerTranslationTests : IDisposable
     }
 
     public void Dispose() => _db.Dispose();
-
-    private sealed class FixedUser(Guid id) : ICurrentUser
-    {
-        public Guid Id { get; } = id;
-    }
-
-    private sealed class FixedLanguage : IRequestLanguage
-    {
-        public PreferredLanguage Current => PreferredLanguage.English;
-    }
 }
