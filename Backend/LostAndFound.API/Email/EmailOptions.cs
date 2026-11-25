@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using LostAndFound.Api.Security;
 
 namespace LostAndFound.Api.Email;
 
 /// <summary>Bound from the "Email" section.</summary>
-public sealed class EmailOptions
+public sealed class EmailOptions : IValidatableObject
 {
     public const string SectionName = "Email";
 
@@ -15,6 +16,9 @@ public sealed class EmailOptions
 
     /// <summary>When Host is empty in Development, emails are written to App_Data/emails instead of being sent.</summary>
     public SmtpOptions Smtp { get; init; } = new();
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) =>
+        NestedOptionsValidation.Validate(Smtp, $"{SectionName}:{nameof(Smtp)}");
 }
 
 public sealed class SmtpOptions

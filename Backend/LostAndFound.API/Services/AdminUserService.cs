@@ -5,6 +5,7 @@ using LostAndFound.Api.Contracts.Users;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Logging;
 using LostAndFound.Api.Services.Admin;
 using LostAndFound.Api.Services.Posts;
 using LostAndFound.Api.Services.Search;
@@ -16,7 +17,8 @@ namespace LostAndFound.Api.Services;
 /// The admin users table. Deleted accounts are left out: they have no personal data left to manage.
 /// A disabled account is cut off immediately, because every request checks the account is active.
 /// </summary>
-public sealed class AdminUserService(AppDbContext db, ICurrentUser currentUser, TimeProvider timeProvider) : IAdminUserService
+public sealed class AdminUserService(AppDbContext db, ICurrentUser currentUser, TimeProvider timeProvider, ILogger<AdminUserService> logger)
+    : IAdminUserService
 {
     private static readonly string AdminRoleName = Roles.Admin.ToUpperInvariant();
 
@@ -95,6 +97,7 @@ public sealed class AdminUserService(AppDbContext db, ICurrentUser currentUser, 
         });
 
         await db.SaveChangesAsync(cancellationToken);
+        logger.AccountStatusChanged(adminId, target.User.Id, request.Status);
     }
 
     /// <summary>Null until the Admin role has been created, in which case nobody is an admin.</summary>

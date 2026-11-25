@@ -5,6 +5,7 @@ using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.Images;
+using LostAndFound.Api.Logging;
 using LostAndFound.Api.Services.Posts;
 using LostAndFound.Api.Services.Profile;
 using LostAndFound.Api.Storage;
@@ -66,6 +67,11 @@ public sealed class ProfileService(
             throw IdentityErrorMapper.ToValidationException(result, nameof(UpdateProfileRequest.CurrentPassword));
         }
 
+        if (emailChanged)
+        {
+            logger.EmailChanged(user.Id);
+        }
+
         return await ToResponseAsync(user);
     }
 
@@ -108,6 +114,8 @@ public sealed class ProfileService(
         {
             throw IdentityErrorMapper.ToValidationException(result, nameof(ChangePasswordRequest.NewPassword));
         }
+
+        logger.PasswordChanged(user.Id);
     }
 
     public async Task<UserSettings> GetSettingsAsync(CancellationToken cancellationToken) =>

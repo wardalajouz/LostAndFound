@@ -2,13 +2,17 @@ using LostAndFound.Api.Contracts.Auth;
 using LostAndFound.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using LostAndFound.Api.Security;
 
 namespace LostAndFound.Api.Controllers;
 
 [ApiController]
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitPolicies.Auth)]
 [Route("api/auth")]
 [Produces("application/json")]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
 public sealed class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]

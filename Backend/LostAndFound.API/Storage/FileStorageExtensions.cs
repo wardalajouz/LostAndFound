@@ -1,3 +1,5 @@
+using LostAndFound.Api.Logging;
+
 namespace LostAndFound.Api.Storage;
 
 public static class FileStorageExtensions
@@ -16,7 +18,7 @@ public static class FileStorageExtensions
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
             {
-                logger.LogWarning(exception, "Could not delete stored file {StorageKey}.", key);
+                logger.StoredFileDeleteFailed(exception, key);
             }
         }
     }

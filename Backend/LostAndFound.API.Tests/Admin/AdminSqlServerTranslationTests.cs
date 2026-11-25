@@ -7,6 +7,7 @@ using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services;
 using LostAndFound.Api.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace LostAndFound.Api.Tests.Admin;
 
@@ -82,7 +83,7 @@ public sealed class AdminSqlServerTranslationTests : IDisposable
     [Fact]
     public async Task Users_table_with_role_and_post_count_translates()
     {
-        var service = new AdminUserService(_db, _admin, TimeProvider.System);
+        var service = new AdminUserService(_db, _admin, TimeProvider.System, NullLogger<AdminUserService>.Instance);
 
         await service.GetAsync(new AdminUsersQuery { Search = "ward", UserType = UserType.Staff, Status = AccountStatus.Disabled }, CancellationToken.None);
 
@@ -95,7 +96,7 @@ public sealed class AdminSqlServerTranslationTests : IDisposable
     [Fact]
     public async Task Status_change_lookup_translates()
     {
-        var service = new AdminUserService(_db, _admin, TimeProvider.System);
+        var service = new AdminUserService(_db, _admin, TimeProvider.System, NullLogger<AdminUserService>.Instance);
 
         await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateStatusAsync(
             Guid.NewGuid(), new UpdateAccountStatusRequest { Status = AccountStatus.Disabled, Reason = "Spam posts" }, CancellationToken.None));
@@ -114,5 +115,5 @@ public sealed class AdminSqlServerTranslationTests : IDisposable
     public void Dispose() => _db.Dispose();
 
     private AdminPostService NewPostService() =>
-        new(_db, _admin, new FixedRequestLanguage(), new DatabaseNotifier(_db), TimeProvider.System);
+        new(_db, _admin, new FixedRequestLanguage(), new DatabaseNotifier(_db), TimeProvider.System, NullLogger<AdminPostService>.Instance);
 }

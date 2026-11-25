@@ -30,6 +30,7 @@ public static class StorageServiceCollectionExtensions
     /// <summary>
     /// Serves stored images publicly at <see cref="Services.Posts.ImageUrls.PathPrefix"/>.
     /// Only .webp files are served, the only type the API writes, so nothing else in the folder is reachable.
+    /// Protective headers such as nosniff come from <see cref="Security.SecurityHeadersMiddleware"/>.
     /// </summary>
     public static WebApplication UseStoredFiles(this WebApplication app)
     {
@@ -46,7 +47,6 @@ public static class StorageServiceCollectionExtensions
             ServeUnknownFileTypes = false,
             OnPrepareResponse = context =>
             {
-                context.Context.Response.Headers[HeaderNames.XContentTypeOptions] = "nosniff";
                 // File names are random and never reused, so browsers can cache them for good.
                 context.Context.Response.Headers[HeaderNames.CacheControl] = "public, max-age=31536000, immutable";
             }

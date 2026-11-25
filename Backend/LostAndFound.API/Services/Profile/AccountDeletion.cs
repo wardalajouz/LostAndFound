@@ -1,6 +1,7 @@
 using LostAndFound.Api.Contracts.Admin;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
+using LostAndFound.Api.Logging;
 using LostAndFound.Api.Services.Posts;
 using LostAndFound.Api.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,8 @@ public sealed class AccountDeletion(AppDbContext db, IFileStorage storage, TimeP
 
             await transaction.CommitAsync(cancellationToken);
         }
+
+        logger.AccountDeleted(userId);
 
         if (avatarKey is not null)
         {

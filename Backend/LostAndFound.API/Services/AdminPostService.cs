@@ -9,6 +9,7 @@ using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
 using LostAndFound.Api.Localization;
+using LostAndFound.Api.Logging;
 using LostAndFound.Api.Notifications;
 using LostAndFound.Api.Services.Admin;
 using LostAndFound.Api.Services.Posts;
@@ -25,7 +26,8 @@ public sealed class AdminPostService(
     ICurrentUser currentUser,
     IRequestLanguage requestLanguage,
     INotifier notifier,
-    TimeProvider timeProvider) : IAdminPostService
+    TimeProvider timeProvider,
+    ILogger<AdminPostService> logger) : IAdminPostService
 {
     private const string PostNotFound = "Post not found.";
 
@@ -148,5 +150,6 @@ public sealed class AdminPostService(
         await notifier.NotifyPostModeratedAsync(post.Id, post.OwnerId, now, cancellationToken);
 
         await db.SaveChangesAsync(cancellationToken);
+        logger.PostModerated(currentUser.Id, post.Id, request.Visibility);
     }
 }

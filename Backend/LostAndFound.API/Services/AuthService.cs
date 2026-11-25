@@ -5,6 +5,7 @@ using LostAndFound.Api.Contracts.Users;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.Email;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -54,6 +55,7 @@ public sealed class AuthService(
         User? user = await FindActiveOrDisabledUserAsync(request.Email);
         if (user is null)
         {
+            logger.LoginFailedUnknownAccount();
             throw new UnauthorizedException(InvalidCredentials);
         }
 
@@ -65,6 +67,12 @@ public sealed class AuthService(
         if (!await userManager.CheckPasswordAsync(user, request.Password))
         {
             await userManager.AccessFailedAsync(user);
+            logger.LoginFailed(user.Id);
+            if (await userManager.IsLockedOutAsync(user))
+            {
+                logger.AccountLockedOut(user.Id);
+            }
+
             throw new UnauthorizedException(InvalidCredentials);
         }
 
@@ -73,6 +81,7 @@ public sealed class AuthService(
         // Checked only after the password, so the response does not reveal disabled accounts to strangers.
         if (user.Status == AccountStatus.Disabled)
         {
+            logger.LoginRefusedDisabled(user.Id);
             throw new ForbiddenException("This account has been disabled. Contact support for help.");
         }
 
@@ -97,11 +106,12 @@ public sealed class AuthService(
         try
         {
             await emailService.SendAsync(PasswordResetEmail.Create(user.Email!, user.FullName, resetLink), cancellationToken);
+            logger.PasswordResetRequested(user.Id);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             // Swallowed on purpose: a different response for existing accounts would reveal who is registered.
-            logger.LogError(exception, "Could not send the password reset email to user {UserId}.", user.Id);
+            logger.ResetEmailFailed(exception, user.Id);
         }
     }
 
@@ -128,6 +138,7 @@ public sealed class AuthService(
         // The user proved they own the email, so lift any lockout from earlier failed logins.
         await userManager.SetLockoutEndDateAsync(user, lockoutEnd: null);
         await userManager.ResetAccessFailedCountAsync(user);
+        logger.PasswordResetCompleted(user.Id);
     }
 
     /// <summary>Deleted accounts are treated as if they do not exist.</summary>

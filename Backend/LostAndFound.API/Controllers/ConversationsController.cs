@@ -3,6 +3,8 @@ using LostAndFound.Api.Contracts.Conversations;
 using LostAndFound.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using LostAndFound.Api.Security;
 
 namespace LostAndFound.Api.Controllers;
 
@@ -59,7 +61,9 @@ public sealed class ConversationsController(IConversationService conversationSer
     }
 
     [HttpPost("{id:guid}/messages")]
+    [EnableRateLimiting(RateLimitPolicies.Messages)]
     [ProducesResponseType<MessageResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MessageResponse>> SendMessage(

@@ -1,3 +1,5 @@
+using LostAndFound.Api.Logging;
+
 namespace LostAndFound.Api.Email;
 
 /// <summary>
@@ -19,6 +21,6 @@ public sealed class FileEmailService(IWebHostEnvironment environment, TimeProvid
         string content = $"To: {message.ToName} <{message.ToAddress}>\n{replyTo}Subject: {message.Subject}\n\n{message.TextBody}\n";
         await File.WriteAllTextAsync(path, content, cancellationToken);
 
-        logger.LogInformation("Development email written to {Path}.", path);
+        logger.DevelopmentEmailWritten(path);
     }
 }

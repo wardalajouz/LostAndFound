@@ -1,5 +1,6 @@
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.ErrorHandling;
+using LostAndFound.Api.Logging;
 using Microsoft.AspNetCore.Identity;
 
 namespace LostAndFound.Api.Services.Profile;
@@ -9,7 +10,7 @@ namespace LostAndFound.Api.Services.Profile;
 /// Wrong guesses count toward the same lockout as login, so this cannot be used to guess passwords.
 /// A wrong password is a 400 field error, not a 401, because the user is still signed in.
 /// </summary>
-public sealed class PasswordConfirmation(UserManager<User> userManager)
+public sealed class PasswordConfirmation(UserManager<User> userManager, ILogger<PasswordConfirmation> logger)
 {
     public async Task ConfirmAsync(User user, string? password, string field)
     {
@@ -26,6 +27,11 @@ public sealed class PasswordConfirmation(UserManager<User> userManager)
         if (!await userManager.CheckPasswordAsync(user, password))
         {
             await userManager.AccessFailedAsync(user);
+            if (await userManager.IsLockedOutAsync(user))
+            {
+                logger.AccountLockedOut(user.Id);
+            }
+
             throw new RequestValidationException(field, "The password is incorrect.");
         }
 

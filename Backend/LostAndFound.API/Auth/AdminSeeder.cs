@@ -1,5 +1,6 @@
 using LostAndFound.Api.Contracts.Users;
 using LostAndFound.Api.Data.Entities;
+using LostAndFound.Api.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -38,7 +39,7 @@ public sealed class AdminSeeder(
                 CreatedAt = timeProvider.GetUtcNow()
             };
             EnsureSucceeded(await userManager.CreateAsync(admin, seed.Password!), "create the admin account");
-            logger.LogInformation("Created admin account {AdminId}.", admin.Id);
+            logger.AdminAccountCreated(admin.Id);
         }
 
         if (!await userManager.IsInRoleAsync(admin, Roles.Admin))

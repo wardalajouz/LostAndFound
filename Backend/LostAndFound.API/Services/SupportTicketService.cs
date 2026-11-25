@@ -3,6 +3,7 @@ using LostAndFound.Api.Contracts.Support;
 using LostAndFound.Api.Data;
 using LostAndFound.Api.Data.Entities;
 using LostAndFound.Api.Email;
+using LostAndFound.Api.Logging;
 using LostAndFound.Api.Support;
 using Microsoft.Extensions.Options;
 
@@ -39,7 +40,7 @@ public sealed class SupportTicketService(
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             // The ticket is already saved, so the user's message is not lost; the copy can be found in the database.
-            logger.LogError(exception, "Could not email support ticket {TicketId} to the support inbox.", ticket.Id);
+            logger.SupportEmailFailed(exception, ticket.Id);
         }
     }
 }
