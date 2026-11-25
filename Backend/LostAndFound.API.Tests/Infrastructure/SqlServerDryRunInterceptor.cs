@@ -16,8 +16,8 @@ public sealed class SqlServerDryRunInterceptor : DbConnectionInterceptor, IDbCom
     /// <summary>Answer for EXISTS checks (AnyAsync). True lets a test reach the code after an access check.</summary>
     public bool ExistsResult { get; set; }
 
-    /// <summary>A single boolean row for queries whose SQL contains the given text, for example a settings lookup.</summary>
-    public Dictionary<string, bool> BooleanRows { get; } = [];
+    /// <summary>A single one-column row for queries whose SQL contains the given text, for example a settings or role lookup.</summary>
+    public Dictionary<string, object> ScalarRows { get; } = [];
 
     public override ValueTask<InterceptionResult> ConnectionOpeningAsync(
         DbConnection connection, ConnectionEventData eventData, InterceptionResult result, CancellationToken cancellationToken = default) =>
@@ -58,9 +58,9 @@ public sealed class SqlServerDryRunInterceptor : DbConnectionInterceptor, IDbCom
             table.Columns.Add("Exists", typeof(bool));
             table.Rows.Add(ExistsResult);
         }
-        else if (BooleanRows.FirstOrDefault(row => trimmed.Contains(row.Key, StringComparison.Ordinal)) is { Key: not null } match)
+        else if (ScalarRows.FirstOrDefault(row => trimmed.Contains(row.Key, StringComparison.Ordinal)) is { Key: not null } match)
         {
-            table.Columns.Add("Value", typeof(bool));
+            table.Columns.Add("Value", match.Value.GetType());
             table.Rows.Add(match.Value);
         }
 

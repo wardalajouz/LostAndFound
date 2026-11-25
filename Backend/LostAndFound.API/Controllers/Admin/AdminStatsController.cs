@@ -12,7 +12,6 @@ namespace LostAndFound.Api.Controllers.Admin;
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(StatusCodes.Status403Forbidden)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class AdminStatsController(IAdminStatsService adminStatsService) : ControllerBase
 {
     [HttpGet]

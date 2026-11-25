@@ -16,6 +16,9 @@ public interface INotifier
     /// <summary>Tells everyone who started a chat about the post that it has been resolved.</summary>
     Task NotifyPostResolvedAsync(Guid postId, DateTimeOffset resolvedAt, CancellationToken cancellationToken);
 
+    /// <summary>Tells the post's owner that an administrator changed its visibility.</summary>
+    Task NotifyPostModeratedAsync(Guid postId, Guid ownerId, DateTimeOffset moderatedAt, CancellationToken cancellationToken);
+
     /// <summary>Marks the user's new-message notifications for a chat as read. Runs immediately.</summary>
     Task MarkChatNotificationsReadAsync(Guid userId, Guid conversationId, CancellationToken cancellationToken);
 }

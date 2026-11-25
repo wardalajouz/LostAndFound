@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using LostAndFound.Api.Localization;
 
 namespace LostAndFound.Api.Contracts.Posts;
 
 /// <summary>Fields shared by create and update post requests.</summary>
 public abstract record PostDetails : IValidatableObject
 {
-    private static readonly TimeZoneInfo CampusTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
-
     [Required, StringLength(100, MinimumLength = 2)]
     public required string ItemName { get; init; }
 
@@ -38,7 +37,7 @@ public abstract record PostDetails : IValidatableObject
 
     public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        DateOnly today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTime.UtcNow, CampusTimeZone));
+        DateOnly today = CampusTime.Today(DateTimeOffset.UtcNow);
 
         if (DateOccurred > today)
         {

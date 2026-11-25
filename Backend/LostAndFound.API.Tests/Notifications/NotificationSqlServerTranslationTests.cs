@@ -64,7 +64,7 @@ public sealed class NotificationSqlServerTranslationTests : IDisposable
     [Fact]
     public async Task New_message_settings_and_existing_notification_lookups_translate()
     {
-        _interceptor.BooleanRows["[NotifyOnNewMessage]"] = true;
+        _interceptor.ScalarRows["[NotifyOnNewMessage]"] = true;
         var notifier = new DatabaseNotifier(_db);
 
         await notifier.NotifyNewMessageAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, CancellationToken.None);

@@ -60,6 +60,25 @@ public sealed class DatabaseNotifier(AppDbContext db) : INotifier
         }));
     }
 
+    public async Task NotifyPostModeratedAsync(Guid postId, Guid ownerId, DateTimeOffset moderatedAt, CancellationToken cancellationToken)
+    {
+        bool wantsIt = await db.Users
+            .Where(u => u.Id == ownerId && u.DeletedAt == null)
+            .Select(u => u.NotifyOnPostUpdate)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (wantsIt)
+        {
+            db.Notifications.Add(new Notification
+            {
+                UserId = ownerId,
+                Type = NotificationType.PostModerated,
+                PostId = postId,
+                CreatedAt = moderatedAt
+            });
+        }
+    }
+
     public async Task MarkChatNotificationsReadAsync(Guid userId, Guid conversationId, CancellationToken cancellationToken) =>
         await db.Notifications
             .Where(n => n.UserId == userId && n.ConversationId == conversationId

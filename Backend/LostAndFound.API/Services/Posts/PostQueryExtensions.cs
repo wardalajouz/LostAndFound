@@ -1,6 +1,7 @@
 using LostAndFound.Api.Contracts.Common;
 using LostAndFound.Api.Contracts.Posts;
 using LostAndFound.Api.Data.Entities;
+using LostAndFound.Api.Services.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace LostAndFound.Api.Services.Posts;
@@ -8,8 +9,6 @@ namespace LostAndFound.Api.Services.Posts;
 /// <summary>Search, sort, and paging shared by the browse page and "My Items".</summary>
 internal static class PostQueryExtensions
 {
-    private const char LikeEscape = '\\';
-
     /// <summary>Case-insensitive match on item name, description, brand, or color. The text is matched literally.</summary>
     public static IQueryable<Post> MatchingSearch(this IQueryable<Post> posts, string? search)
     {
@@ -18,12 +17,12 @@ internal static class PostQueryExtensions
             return posts;
         }
 
-        string pattern = $"%{EscapeLike(search.Trim())}%";
+        string pattern = LikeSearch.ContainsPattern(search);
         return posts.Where(post =>
-            EF.Functions.Like(post.ItemName, pattern, LikeEscape.ToString())
-            || EF.Functions.Like(post.Description, pattern, LikeEscape.ToString())
-            || (post.Brand != null && EF.Functions.Like(post.Brand, pattern, LikeEscape.ToString()))
-            || EF.Functions.Like(post.Color, pattern, LikeEscape.ToString()));
+            EF.Functions.Like(post.ItemName, pattern, LikeSearch.EscapeCharacter)
+            || EF.Functions.Like(post.Description, pattern, LikeSearch.EscapeCharacter)
+            || (post.Brand != null && EF.Functions.Like(post.Brand, pattern, LikeSearch.EscapeCharacter))
+            || EF.Functions.Like(post.Color, pattern, LikeSearch.EscapeCharacter));
     }
 
     /// <summary>Id is a tie-breaker, so paging is stable when two posts share a timestamp.</summary>
@@ -41,10 +40,4 @@ internal static class PostQueryExtensions
 
         return new PagedResponse<TResult>(items, paging.Page, paging.PageSize, totalCount);
     }
-
-    private static string EscapeLike(string text) => text
-        .Replace(@"\", @"\\", StringComparison.Ordinal)
-        .Replace("%", @"\%", StringComparison.Ordinal)
-        .Replace("_", @"\_", StringComparison.Ordinal)
-        .Replace("[", @"\[", StringComparison.Ordinal);
 }

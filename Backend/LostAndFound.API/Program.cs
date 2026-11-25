@@ -17,7 +17,6 @@ builder.Services
 builder.Services.AddSwaggerWithJwt();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-builder.Services.AddExceptionHandler<NotImplementedExceptionHandler>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddDatabase(builder.Configuration);

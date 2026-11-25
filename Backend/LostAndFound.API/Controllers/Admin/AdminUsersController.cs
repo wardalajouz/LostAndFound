@@ -13,9 +13,9 @@ namespace LostAndFound.Api.Controllers.Admin;
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(StatusCodes.Status403Forbidden)]
-[ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
 public sealed class AdminUsersController(IAdminUserService adminUserService) : ControllerBase
 {
+    /// <summary>Accounts that are not deleted, newest first.</summary>
     [HttpGet]
     [ProducesResponseType<PagedResponse<AdminUserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -25,11 +25,15 @@ public sealed class AdminUsersController(IAdminUserService adminUserService) : C
         return Ok(await adminUserService.GetAsync(query, cancellationToken));
     }
 
-    /// <summary>Disable or reactivate an account. The reason is logged.</summary>
+    /// <summary>
+    /// Disable or reactivate an account. The reason is logged, and a disabled user is signed out at once.
+    /// 409 for your own account, another administrator, or a status the account already has.
+    /// </summary>
     [HttpPut("{id:guid}/status")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateStatus(
         Guid id, UpdateAccountStatusRequest request, CancellationToken cancellationToken)
     {
