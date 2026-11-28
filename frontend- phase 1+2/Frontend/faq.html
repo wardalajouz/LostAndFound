@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Findly lost and found platform for Yarmouk University.">
+  <title>FAQ | Findly</title>
+  <link rel="stylesheet" href="css/public.css">
+</head>
+<body data-page="faq">
+<div id="app" v-cloak>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a class="brand" href="home.html">Findly<span>.</span></a>
+    <nav class="nav-links" :aria-label="t.mainNavigation">
+      <a href="home.html" :aria-current="page === 'home' ? 'page' : null">{{ t.home }}</a>
+      <a href="browse.html" :aria-current="isBrowse ? 'page' : null">{{ t.browse }}</a>
+      <a href="how-it-works.html">{{ t.how }}</a>
+      <a href="about.html">{{ t.about }}</a>
+      <a href="help.html">{{ t.help }}</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-light" type="button" @click="toggleLanguage">{{ language === 'en' ? 'عربي' : 'English' }}</button>
+      <a class="btn btn-light" href="login.html">{{ t.login }}</a>
+      <a class="btn btn-primary" href="register.html">{{ t.signup }}</a>
+    </div>
+  </div>
+</header>
+<main>
+
+  <section class="section page-intro"><h1>{{ t.faqTitle }}</h1><p>{{ t.faqLead }}</p></section>
+  <section class="section faq-section">
+    <label for="faq-search">{{ t.searchFaq }}</label>
+    <input id="faq-search" type="search" v-model.trim="faqSearch" :placeholder="t.searchFaq">
+    <div class="faq-list">
+      <article v-for="(faq, index) in filteredFaqs" :key="faq.question" class="faq-item">
+        <button type="button" :aria-expanded="openFaq === index" @click="openFaq = openFaq === index ? -1 : index">
+          {{ faq.question }} <span aria-hidden="true">{{ openFaq === index ? '−' : '+' }}</span>
+        </button>
+        <p v-if="openFaq === index">{{ faq.answer }}</p>
+      </article>
+      <p v-if="!filteredFaqs.length" class="empty-card">{{ t.noFaq }}</p>
+    </div>
+    <p>{{ t.stillQuestions }} <a href="contact.html">{{ t.contact }}</a></p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div><strong>Findly.</strong><p>{{ t.footerText }}</p></div>
+    <nav class="footer-links" :aria-label="t.footerNavigation">
+      <a href="about.html">{{ t.about }}</a>
+      <a href="how-it-works.html">{{ t.how }}</a>
+      <a href="faq.html">FAQ</a>
+      <a href="help.html">{{ t.help }}</a>
+      <a href="contact.html">{{ t.contact }}</a>
+      <span :title="t.futurePhase">{{ t.privacy }} · {{ t.terms }}</span>
+    </nav>
+  </div>
+  <p class="footer-note">{{ t.previewNote }}</p>
+</footer>
+
+<div class="overlay" v-if="showLoginModal" @click.self="showLoginModal = false">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+    <h2 id="login-modal-title">{{ t.loginRequired }}</h2>
+    <p>{{ t.loginRequiredText }}</p>
+    <div class="button-row">
+      <a class="btn btn-primary" href="login.html">{{ t.login }}</a>
+      <a class="btn btn-light" href="register.html">{{ t.signup }}</a>
+      <button class="btn btn-light" type="button" @click="showLoginModal = false">{{ t.cancel }}</button>
+    </div>
+  </section>
+</div>
+</div>
+<script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+<script src="js/language.js"></script>
+<script src="js/public.js"></script>
+</body>
+</html>

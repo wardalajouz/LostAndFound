@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | Findly</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="login">
+  <div id="app" v-cloak>
+    <main id="auth-layout">
+
+      <aside id="intro">
+        <a href="home.html">Findly.</a>
+        <div>
+          <p>{{ t.university }}</p>
+          <h1>{{ t.introTitle }}</h1>
+          <p>{{ t.introDescription }}</p>
+          <img id="intro-image" src="images/findly-lost-found.png" :alt="t.introAlt">
+        </div>
+        <p>{{ t.campusMembers }}</p>
+      </aside>
+
+      <section id="auth-panel">
+        <button id="language-switch" type="button" @click="toggleLanguage" :aria-label="t.switchLanguage">{{ language === "en" ? "عربي" : "English" }}</button>
+        <div id="auth-content">
+          <h1>{{ t.loginTitle }}</h1>
+          <p>{{ t.loginDescription }}</p>
+
+          <form id="auth-form" @input="clearFeedback" @change="clearFeedback" @submit.prevent="checkLogin">
+            <label for="email">{{ t.email }}</label>
+            <input
+              id="email"
+              type="email"
+              v-model.trim="email"
+              autocomplete="email"
+              :placeholder="t.emailPlaceholder"
+              required
+            >
+
+            <label for="password">{{ t.password }}</label>
+            <input
+              id="password"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              autocomplete="current-password"
+              :placeholder="t.passwordPlaceholder"
+              required
+            >
+
+            <div id="checks">
+              <label>
+                <input type="checkbox" v-model="showPassword">
+                {{ t.showPassword }}
+              </label>
+            </div>
+
+            <button type="submit">
+              {{ t.signIn }}
+            </button>
+          </form>
+
+          <p id="error" v-if="error" role="alert">{{ t[error] }}</p>
+          <p id="preview-status" v-if="message" role="status">{{ t[message] }}</p>
+
+          <div id="auth-links">
+            <a href="forgot.html">{{ t.forgotPassword }}</a>
+            <a href="register.html">{{ t.createAccount }}</a>
+          </div>
+
+          <a id="guest-link" href="home.html">{{ t.continueGuest }}</a>
+          <p id="auth-note">{{ t.loginNote }}</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="js/language.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

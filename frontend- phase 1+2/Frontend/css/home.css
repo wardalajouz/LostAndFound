@@ -1,0 +1,36 @@
+/* Home is kept in its approved blue / white theme. */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.9fr);
+  align-items: center;
+  gap: 28px;
+  padding: 65px 7%;
+  background: linear-gradient(135deg, #102e69, #2563eb);
+  color: white;
+}
+.hero .eyebrow { color: #d8e7ff; }
+.hero h1 { font-size: clamp(30px, 5vw, 53px); line-height: 1.15; }
+.hero-text > p { color: #e4eeff; }
+.hero-image { width: 100%; max-width: 490px; justify-self: center; }
+.hero-search {
+  display: flex;
+  gap: 9px;
+  margin: 25px 0;
+  padding: 8px;
+  max-width: 680px;
+  background: white;
+  border-radius: 10px;
+}
+.hero-search input { flex: 1; width: 100%; min-width: 0; border: 0; padding: 12px; }
+.hero-small { margin-top: 22px; font-size: 13px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ai-banner { display: flex; align-items: center; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+.ai-banner p { max-width: 670px; }
+@media (max-width: 850px) {
+  .hero { grid-template-columns: 1fr; padding: 44px 6%; }
+  .hero-image { max-width: 300px; }
+}
+@media (max-width: 450px) {
+  .hero-search { flex-direction: column; }
+  .hero-search input { min-height: 44px; }
+}

@@ -1,0 +1,254 @@
+/* Findly: Login, Register, Forgot Password and Reset Password — UI only. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #243550;
+  background: #f6f9ff;
+  line-height: 1.5;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid #7daaff;
+  outline-offset: 2px;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+/* ========= AUTHENTICATION PAGES ========= */
+
+#auth-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 43% 57%;
+}
+
+#intro {
+  background: linear-gradient(135deg, #123575, #2563eb);
+  color: white;
+  padding: 45px 9%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#intro a {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+}
+
+#intro h1 {
+  font-size: 40px;
+  max-width: 450px;
+}
+
+#intro p {
+  color: #e0ebff;
+}
+
+/* Illustration shared by Login, Register and Forgot Password. */
+#intro-image {
+  display: block;
+  width: 80%;
+  max-width: 350px;
+  height: auto;
+  margin: 20px auto 0;
+}
+
+#auth-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 78px 24px 42px;
+  background: white;
+}
+
+#language-switch {
+  position: absolute;
+  top: 22px;
+  inset-inline-end: 24px;
+  padding: 8px 14px;
+  border: 1px solid #b6c9e6;
+  border-radius: 9px;
+  background: white;
+  color: #17448c;
+  font-weight: bold;
+}
+
+#language-switch:hover {
+  background: #eef4ff;
+}
+
+#auth-form input[type="email"],
+#auth-form input[autocomplete="new-password"],
+#auth-form input[autocomplete="current-password"],
+#auth-form input[id="token"] {
+  direction: ltr;
+  text-align: left;
+}
+
+#auth-content {
+  width: 100%;
+  max-width: 420px;
+}
+
+#auth-content h1 {
+  color: #173873;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+#auth-content > p {
+  color: #63738a;
+}
+
+#auth-form {
+  margin-top: 22px;
+}
+
+#auth-form > label {
+  display: block;
+  margin: 16px 0 6px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#auth-form > input,
+#auth-form > select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #b6c9e6;
+  border-radius: 9px;
+  background: white;
+}
+
+#auth-form > input:focus,
+#auth-form > select:focus {
+  border-color: #2563eb;
+}
+
+#checks {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+#checks label,
+#terms-check label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+#checks input,
+#terms-check input {
+  accent-color: #2563eb;
+  flex-shrink: 0;
+}
+
+#terms-check {
+  margin: 18px 0;
+}
+
+#auth-form > button,
+#guest-link {
+  width: 100%;
+  display: block;
+  border: 1px solid #2563eb;
+  border-radius: 9px;
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+}
+
+#auth-form > button {
+  background: #2563eb;
+  color: white;
+  margin-top: 18px;
+}
+
+#auth-form > button:hover {
+  background: #174cb9;
+}
+
+#guest-link {
+  background: white;
+  color: #2563eb;
+}
+
+#auth-links {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: 14px;
+}
+
+#error,
+#preview-status {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+#error {
+  color: #9c2929 !important;
+  background: #fff1f1;
+}
+
+#preview-status {
+  color: #1d4ed8 !important;
+  background: #eff6ff;
+}
+
+#auth-note {
+  font-size: 12px;
+  margin-top: 18px;
+}
+
+
+/* PHONE / TABLET */
+@media (max-width: 900px) {
+  #auth-layout { grid-template-columns: 1fr; }
+  #intro { display: none; }
+}
+
+@media (max-width: 600px) {
+  #auth-panel { padding: 80px 20px 45px; }
+}

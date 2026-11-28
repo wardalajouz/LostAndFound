@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Findly lost and found platform for Yarmouk University.">
+  <title>Lost Items | Findly</title>
+  <link rel="stylesheet" href="css/public.css">
+</head>
+<body data-page="lost">
+<div id="app" v-cloak>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a class="brand" href="home.html">Findly<span>.</span></a>
+    <nav class="nav-links" :aria-label="t.mainNavigation">
+      <a href="home.html" :aria-current="page === 'home' ? 'page' : null">{{ t.home }}</a>
+      <a href="browse.html" :aria-current="isBrowse ? 'page' : null">{{ t.browse }}</a>
+      <a href="how-it-works.html">{{ t.how }}</a>
+      <a href="about.html">{{ t.about }}</a>
+      <a href="help.html">{{ t.help }}</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-light" type="button" @click="toggleLanguage">{{ language === 'en' ? 'عربي' : 'English' }}</button>
+      <a class="btn btn-light" href="login.html">{{ t.login }}</a>
+      <a class="btn btn-primary" href="register.html">{{ t.signup }}</a>
+    </div>
+  </div>
+</header>
+<main>
+
+  <section class="section page-intro">
+    <p class="eyebrow">{{ t.campusTag }}</p>
+    <h1>{{ page === 'lost' ? t.lostItems : page === 'found' ? t.foundItems : t.browseTitle }}</h1>
+    <p>{{ t.browseDescription }}</p>
+  </section>
+  <section class="section">
+    <!-- All controls are local Vue UI state; no data request is sent. -->
+    <form class="filter-card" @submit.prevent="applyFilters">
+      <label for="browse-search">{{ t.search }}</label>
+      <input id="browse-search" type="search" v-model.trim="searchText" :placeholder="t.searchHint">
+      <div class="tabs" role="group" :aria-label="t.type">
+        <button type="button" v-for="kind in ['All','Lost','Found']" :key="kind"
+          :class="{ selected: typeFilter === kind }" @click="typeFilter = kind">{{ kindLabel(kind) }}</button>
+      </div>
+      <div class="filter-grid">
+        <div><label for="category">{{ t.category }}</label>
+          <select id="category" v-model="categoryFilter">
+            <option value="All">{{ t.allCategories }}</option>
+            <option v-for="category in categories" :key="category" :value="category">{{ categoryLabel(category) }}</option>
+          </select></div>
+        <div><label for="campus-location">{{ t.location }}</label>
+          <select id="campus-location" v-model="campusLocationId">
+            <option value="">{{ t.locationsLater }}</option>
+          </select></div>
+        <div><label for="date">{{ t.date }}</label><input id="date" type="date" v-model="dateFilter"></div>
+        <div><label for="sort">{{ t.sort }}</label>
+          <select id="sort" v-model="sortFilter">
+            <option value="newest">{{ t.newest }}</option>
+            <option value="oldest">{{ t.oldest }}</option>
+          </select></div>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" type="submit">{{ t.apply }}</button>
+        <button class="btn btn-light" type="button" @click="clearFilters">{{ t.clear }}</button>
+      </div>
+      <p class="form-note" v-if="filterMessage" role="status">{{ filterMessage }}</p>
+    </form>
+  </section>
+  <section class="section section-tint">
+    <div class="section-heading"><h2>{{ t.results }}</h2><span class="soft-label">{{ t.uiPreview }}</span></div>
+    <div class="empty-card">
+      <div class="empty-icon" aria-hidden="true">🔎</div>
+      <h3>{{ t.noLiveItems }}</h3>
+      <p>{{ t.itemsLater }}</p>
+      <button class="btn btn-light" type="button" @click="openLoginModal">{{ t.createReport }}</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div><strong>Findly.</strong><p>{{ t.footerText }}</p></div>
+    <nav class="footer-links" :aria-label="t.footerNavigation">
+      <a href="about.html">{{ t.about }}</a>
+      <a href="how-it-works.html">{{ t.how }}</a>
+      <a href="faq.html">FAQ</a>
+      <a href="help.html">{{ t.help }}</a>
+      <a href="contact.html">{{ t.contact }}</a>
+      <span :title="t.futurePhase">{{ t.privacy }} · {{ t.terms }}</span>
+    </nav>
+  </div>
+  <p class="footer-note">{{ t.previewNote }}</p>
+</footer>
+
+<div class="overlay" v-if="showLoginModal" @click.self="showLoginModal = false">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+    <h2 id="login-modal-title">{{ t.loginRequired }}</h2>
+    <p>{{ t.loginRequiredText }}</p>
+    <div class="button-row">
+      <a class="btn btn-primary" href="login.html">{{ t.login }}</a>
+      <a class="btn btn-light" href="register.html">{{ t.signup }}</a>
+      <button class="btn btn-light" type="button" @click="showLoginModal = false">{{ t.cancel }}</button>
+    </div>
+  </section>
+</div>
+</div>
+<script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+<script src="js/language.js"></script>
+<script src="js/public.js"></script>
+</body>
+</html>

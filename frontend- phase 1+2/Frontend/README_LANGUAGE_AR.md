@@ -1,0 +1,2 @@
+- Phase 1: `login.html`, `register.html`, `forgot.html`, `reset-password.html`.
+- Phase 2: `home.html`, `browse.html`, `lost.html`, `found.html`, `post-details.html`, `about.html`, `help.html`, `faq.html`, `how-it-works.html`, `contact.html`.

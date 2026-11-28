@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Findly</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="register">
+  <div id="app" v-cloak>
+    <main id="auth-layout">
+
+      <aside id="intro">
+        <a href="home.html">Findly.</a>
+        <div>
+          <p>{{ t.university }}</p>
+          <h1>{{ t.introTitle }}</h1>
+          <p>{{ t.introDescription }}</p>
+          <img id="intro-image" src="images/findly-lost-found.png" :alt="t.introAlt">
+        </div>
+        <p>{{ t.campusMembers }}</p>
+      </aside>
+
+      <section id="auth-panel">
+        <button id="language-switch" type="button" @click="toggleLanguage" :aria-label="t.switchLanguage">{{ language === "en" ? "عربي" : "English" }}</button>
+        <div id="auth-content">
+          <h1>{{ t.registerTitle }}</h1>
+          <p>{{ t.registerDescription }}</p>
+
+          <form id="auth-form" @input="clearFeedback" @change="clearFeedback" @submit.prevent="checkRegister">
+            <label for="fullName">{{ t.fullName }}</label>
+            <input
+              id="fullName"
+              type="text"
+              v-model.trim="fullName"
+              minlength="2"
+              maxlength="100"
+              autocomplete="name"
+              required
+            >
+
+            <label for="email">{{ t.email }}</label>
+            <input
+              id="email"
+              type="email"
+              v-model.trim="email"
+              autocomplete="email"
+              :placeholder="t.emailPlaceholder"
+              required
+            >
+
+            <label for="userType">{{ t.userType }}</label>
+            <select id="userType" v-model="userType" required>
+              <option value="" disabled>{{ t.selectUserType }}</option>
+              <option value="Student">{{ t.student }}</option>
+              <option value="Faculty">{{ t.faculty }}</option>
+              <option value="Staff">{{ t.staff }}</option>
+              <option value="Visitor">{{ t.visitor }}</option>
+            </select>
+
+            <label for="password">{{ t.password }}</label>
+            <input
+              id="password"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              minlength="8"
+              maxlength="128"
+              autocomplete="new-password"
+              :placeholder="t.passwordHint"
+              required
+            >
+
+            <label for="confirmPassword">{{ t.confirmPassword }}</label>
+            <input
+              id="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="confirmPassword"
+              autocomplete="new-password"
+              required
+            >
+
+            <div id="checks">
+              <label>
+                <input type="checkbox" v-model="showPassword">
+                {{ t.showPassword }}
+              </label>
+              <label>
+                <input type="checkbox" v-model="showConfirmPassword">
+                {{ t.showConfirmation }}
+              </label>
+            </div>
+
+            <div id="terms-check">
+              <label>
+                <input type="checkbox" v-model="acceptTerms" required>
+                {{ t.agreeTerms }}
+                <a href="#" @click.prevent="showTermsNotice">{{ t.terms }}</a>
+              </label>
+            </div>
+
+            <button type="submit">
+              {{ t.createAccount }}
+            </button>
+          </form>
+
+          <p id="error" v-if="error" role="alert">{{ t[error] }}</p>
+          <p id="preview-status" v-if="message" role="status">{{ t[message] }}</p>
+
+          <div id="auth-links">
+            <a href="login.html">{{ t.alreadyAccount }}</a>
+            <a href="home.html">{{ t.continueGuest }}</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="js/language.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
